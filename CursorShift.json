@@ -1,0 +1,13 @@
+{
+  "Name": "Cursor Shift",
+  "Owner": "d-kja",
+  "Description": "Simple cursor offset filter for OpenTabletDriver. Shifts cursor position by configurable X and Y values.",
+  "PluginVersion": "0.1.0",
+  "SupportedDriverVersion": "0.6.6.0",
+  "RepositoryUrl": "https://github.com/d-kja/otd-cursor-shift",
+  "DownloadUrl": "https://github.com/d-kja/otd-cursor-shift/releases/download/v0.1.0/CursorShift.zip",
+  "CompressionFormat": "zip",
+  "SHA256": "",
+  "WikiUrl": "https://github.com/d-kja/otd-cursor-shift",
+  "LicenseIdentifier": "MIT"
+}
