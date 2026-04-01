@@ -1,0 +1,61 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build -c Release
+
+      - name: Get version
+        id: version
+        run: |
+          VERSION=$(grep -oP '(?<=<Version>)[^<]+' CursorShift.csproj)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create release package
+        run: |
+          mkdir -p release/CursorShift
+          cp bin/Release/net8.0/CursorShift.dll release/CursorShift/
+          cp metadata.json release/CursorShift/
+          cd release && zip -r CursorShift.zip CursorShift
+
+      - name: Generate SHA256
+        id: sha
+        run: |
+          SHA=$(sha256sum release/CursorShift.zip | cut -d' ' -f1)
+          echo "sha256=$SHA" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: v${{ steps.version.outputs.version }}
+          body: |
+            ## Cursor Shift v${{ steps.version.outputs.version }}
+
+            **SHA256:** `${{ steps.sha.outputs.sha256 }}`
+
+            ### Installation
+            1. Download `CursorShift.zip`
+            2. Extract to `~/.config/OpenTabletDriver/Plugins/CursorShift/`
+            3. Restart OpenTabletDriver
+          files: release/CursorShift.zip
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
